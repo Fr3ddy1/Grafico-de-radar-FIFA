@@ -1,0 +1,295 @@
+---
+title: "Gráfico de radar usando R"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## \textcolor{blue}{Paquete fmsb}
+
+Un gráfico de radar es una representación visual de una data que posea diferentes características para un mismo individuo o registro, en R es posible crear este tipo de gráfico usando el paquete **"fmsb"** (Functions for Medical Statistics Book with some Demographic Data). 
+
+Es importante destacar, que existen diversos paquetes con los que se pueden lograr estos gráficos, sin embargo en esté artículo exploraremos el funcionamiento de este paquete. Se pueden obtener mejores resultados usando el paquete **"highcharter"**, el cual permite crear un gráfico de radar interactivo.
+
+Un ejemplo de un gráfico de radar se presenta a continuación,
+
+
+```{r, echo=FALSE}
+#CARGO LIBRERIAS
+library(fmsb)
+
+#CREO LA DATA PARA EL GRAFICO
+set.seed(99)
+data <- as.data.frame(matrix( sample( 0:20 , 15 , replace=F) , ncol=5))
+colnames(data) <- c("math" , "english" , "biology" , "music" , "R-coding" )
+rownames(data) <- paste("mister" , letters[1:3] , sep="-")
+
+#AGREGO PRIMERA Y SEGUNDA FILA
+data <- rbind(rep(20,5) , rep(0,5) , data)
+
+#CREO VECTOR DE COLORES
+colors_border=c( rgb(0.2,0.5,0.5,0.9), rgb(0.8,0.2,0.5,0.9) , rgb(0.7,0.5,0.1,0.9) )
+colors_in=c( rgb(0.2,0.5,0.5,0.4), rgb(0.8,0.2,0.5,0.4) , rgb(0.7,0.5,0.1,0.4) )
+
+#CREO GRAFICO DE RADAR
+radarchart( data  , axistype=1 ,
+            #DEFINO COLOR DEL POLIGONO
+            pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
+            #DEFINO LA MALLA
+            cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,20,5), cglwd=0.8,
+            #DEFINO LAS ETIQUETAS
+            vlcex=0.8
+)
+
+#AGREGO LEYENDA
+legend(x=1.5, y=1, legend = rownames(data[-c(1,2),]), bty = "n", pch=20 , col=colors_in , text.col = "grey", cex=1.2, pt.cex=3)
+
+
+```
+
+Donde la data a utilizar es la siguiente,
+
+```{r echo=FALSE}
+#IMPRIMO DATA A USAR
+data
+```
+
+\newpage
+
+## \textcolor{blue}{Estructura de la data}
+
+Observando la data anterior para poder replicar el gráfico de radar es necesario crear una data similar, para ello hay que tener en cuenta lo siguiente,
+
+* La data a usar debe ser un dataframe, donde existan sólo valores numéricos.
+
+* Cada columna va a representar una característica o categoría a evaluar, la misma se debe ajustar a una escala numérica, en el ejemplo anterior la escala usada son valores entre el 0 y el 20.
+
+* Cada fila representa un individuo en específico al cual se le van a evaluar las diferentes características antes definidas (columnas).
+
+* La primera y segunda fila del dataframe son de suma importancia, pues las mismas representan la escala a evaluar. La primera fila indica el máximo de la escala mientras que la segunta fila representa el valor mínimo.
+
+* El nombre de las filas va a representar el ID o la idenrtificación de cada individuo.
+
+## \textcolor{blue}{Función radarchart}
+
+La función **"radarchart"** nos va a permitir crear el gráfico, los comandos usado para este fin son,
+
+
+```{r, echo=TRUE, results='hide',fig.show='hide'}
+#CREO LA DATA PARA EL GRAFICO
+set.seed(99)
+data <- as.data.frame(matrix( sample( 0:20 , 15 , replace=F) , ncol=5))
+colnames(data) <- c("math" , "english" , "biology" , "music" , "R-coding" )
+rownames(data) <- paste("mister" , letters[1:3] , sep="-")
+
+#AGREGO PRIMERA Y SEGUNDA FILA
+data <- rbind(rep(20,5) , rep(0,5) , data)
+
+#CREO VECTOR DE COLORES
+colors_border=c( rgb(0.2,0.5,0.5,0.9), rgb(0.8,0.2,0.5,0.9) , rgb(0.7,0.5,0.1,0.9) )
+colors_in=c( rgb(0.2,0.5,0.5,0.4), rgb(0.8,0.2,0.5,0.4) , rgb(0.7,0.5,0.1,0.4) )
+
+#CREO GRAFICO DE RADAR
+radarchart( df = data  , axistype=1 ,
+            #DEFINO COLOR DEL POLIGONO
+            pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
+            #DEFINO LA MALLA
+            cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,20,5), cglwd=0.8,
+            #DEFINO LAS ETIQUETAS
+            vlcex=0.8
+)
+
+#AGREGO LEYENDA
+legend(x=1.5, y=1, legend = rownames(data[-c(1,2),]), bty = "n", pch=20 , col=colors_in,
+text.col = "grey", cex=1.2, pt.cex=3)
+```
+
+Los principales argumentos de la función **"radarchart"** son,
+
+* **df**: data que se va a emplear en el gráfico.
+
+* **axistype**: entero entre 0 y 5 que indica el tipo de eje a usar, 1 significa ejes centrados.
+
+* **pcol**: vector de colores a ser usado en el polígono.
+
+* **pfcol**: vector de colores para rellenar los polígonos.
+
+* **plwd**: vector que indica el ancho de línea con la cual se trazará el polígono.
+
+* **plty**: vector que indica el tipo de línea con la cual se trazará el polígono.
+
+* **cglcol**: color de línea para la malla.
+
+* **cglty**: tipo de línea usado en la malla.
+
+* **axislabcol**: color de los ejes.
+
+* **caxislabels**: vector que indica la escala a ser usada.
+
+* **cglwd**: ancho de línea a ser usado en la malla.
+
+* **vlcex**: tamaño de fuente de las etiquetas.
+
+Por su parte la función **"legend"** cuenta con los siguientes parámetros,
+
+* **x**: coordenada x donde se ubicará la leyenda.
+
+* **y**: coordenada y donde se ubicará la leyenda.
+
+* **legend**: vector de caracteres, que proporciona informacaión sobre el gráfico.
+
+* **bty**: tipo de caja a ser dibujada alrededor de la leyenda.
+
+* **pch**: tipo de símbolo a ser usado en la leyenda.
+
+* **col**: color de los puntos a ser usados.
+
+* **text.col**: color del texto.
+
+* **cex** y **pt.cex**: factor de expansión para los puntos.
+
+
+## \textcolor{blue}{Estadísticas de los mejores jugadores FIFA 18}
+
+### \textcolor{blue}{Data a usar}
+
+
+
+La data a usar se obtuvo de la plataforma Kaggle, para consultarla o descargarla puede hacer click  [\textcolor{blue}{aquí}](https://www.kaggle.com/thec03u5/fifa-18-demo-player-dataset/data), la misma muestra un ranking de los mejores jugadores según el videojuego FIFA 2018. La data original posee una dimensión de 17.981 filas y 75 variables, de esta data se eligieron sólo 8 variables y solo 10 filas las cuales representan los diez mejores jugadores.
+
+El proceso para la creacion de la misma se presenta a continuación,
+
+```{r ,echo=TRUE}
+#LECTURA DE LA DATA
+data_18 <- read.csv("CompleteDataset.csv")
+
+#FILTRO POR COLUMNAS DE INTERES
+data_18 <- data_18[,c(2,3,14:22,32:47)]
+
+#COLUMNAS A SELECCIONAR
+names(data_18)[c(1,3,4,23,25,26,17,20)]
+
+#FILTRO POR LAS COLUMNAS DEFINITIVAS Y SELECCIONO LAS PRIMERAS 10 FILAS
+d_radar <- data_18[1:10,c(1,3,4,23,25,26,17,20)]
+
+#ARREGLO DATA
+rownames(d_radar) <- d_radar[,1]
+d_radar <- d_radar[,-1]
+d_radar$Acceleration <- as.numeric(as.character(d_radar$Acceleration))
+d_radar$Aggression <- as.numeric(as.character(d_radar$Aggression))
+d_radar$Stamina <- as.numeric(as.character(d_radar$Stamina))
+d_radar$Strength <- as.numeric(as.character(d_radar$Strength))
+d_radar$Vision <- as.numeric(as.character(d_radar$Vision))
+d_radar$Positioning <- as.numeric(as.character(d_radar$Positioning))
+d_radar$Shot.power <- as.numeric(as.character(d_radar$Shot.power))
+
+#IMPRIMO PRIMERAS 6 FILAS DE LA DATA
+head(d_radar)
+```
+
+### \textcolor{blue}{Gráfico de un jugador}
+
+El gráfico de radar para Lionel Messi, es el siguiente,
+
+```{r, echo=TRUE}
+#MODIFICO NOMBRES DE LA DATA
+names(d_radar) <- c("Aceleración","Agresividad","Resistencia",
+                    "Fuerza","Visión","Posicionamiento","Potencia de disparo")
+
+#ARREGLO DETALLES CON EL ACENTO
+rownames(d_radar)[c(4,10)] <- c("L. Suárez","G. Higuaín")
+
+#AGREGO FILAS QUE ME INDICAN LA ESCALA A USAR
+d_radar <- rbind.data.frame(rep(100,7),rep(0,7),d_radar)
+
+#DEFINO DATA FINAL
+d <- d_radar[c(1,2,4),]
+
+#REALIZO GRAFICO 
+radarchart( d  , axistype=1 , 
+            #PARAMETROS POLIGONO
+            pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
+            #PARAMETROS MALLA
+            cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=0.8,
+            #TAMAÑO FUENTE
+            vlcex=0.8 
+)
+
+#AGREGO LA LEYENDA
+legend(x=1.1, y=0.5, legend = rownames(d[-c(1,2),]), bty = "n", pch=20 , col=colors_in ,
+text.col = "grey", cex=0.8, pt.cex=3)
+
+
+```
+
+
+La data empleada para el mismo fué,
+
+```{r, echo=FALSE}
+d[-c(1,2),]
+```
+
+### \textcolor{blue}{Gráficos de dos o más jugadores}
+
+Mediante la función **"radarchart"** es posible hacer la comparación entre dos o más jugadores. Un gráfico comparativo entre Cristiano Ronaldo, Lionel Messi y Neymar, se muestra a continuación,
+
+```{r, echo=FALSE}
+d <- d_radar[c(1,2,3,4,5),]
+# plot with default options:
+radarchart( d  , axistype=1 , 
+            #custom polygon
+            pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
+            #custom the grid
+            cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=0.8,
+            #custom labels
+            vlcex=0.8 
+)
+
+# Add a legend
+legend(x=1.1, y=0.5, legend = rownames(d[-c(1,2),]), bty = "n", pch=20 , col=colors_in , text.col = "grey", cex=0.8, pt.cex=3)
+
+
+```
+
+La data empleada para el mismo fué,
+
+```{r, echo=FALSE}
+d[-c(1,2),]
+```
+
+\newpage
+
+Finalmente se presenta un comparativo entre porteros, estos son Manuel Neuer y David De Gea,
+
+
+```{r, echo=FALSE}
+d <- d_radar[c(1,2,7,9),]
+# plot with default options:
+radarchart( d  , axistype=1 , 
+            #custom polygon
+            pcol=colors_border , pfcol=colors_in , plwd=4 , plty=1,
+            #custom the grid
+            cglcol="grey", cglty=1, axislabcol="grey", caxislabels=seq(0,100,25), cglwd=0.8,
+            #custom labels
+            vlcex=0.8 
+)
+
+# Add a legend
+legend(x=1.1, y=0.5, legend = rownames(d[-c(1,2),]), bty = "n", pch=20 , col=colors_in , text.col = "grey", cex=0.8, pt.cex=3)
+
+
+```
+
+La data empleada para el mismo fué,
+
+```{r, echo=FALSE}
+d[-c(1,2),]
+```
+
+De esta manera se han replicado los gráficos de radar usados en los videojuegos de FIFA y PES. Mejores resultados se pueden obtener usando el paquete **"highcharter"** con el cual se pueden obtener gráficos dinámicos, para ver los resultados haga click aquí (insertar enlace).
+
+Para mayor comodidad puede revisar mi repositorio en el siguiente [\textcolor{blue}{enlace}](https://github.com/Fr3ddy1/Web-scrapping-en-R).
+
+
